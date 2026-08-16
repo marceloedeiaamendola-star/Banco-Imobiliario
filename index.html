@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="Banco Imobiliário">
 <meta name="theme-color" content="#efc000">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="apple-touch-icon" href="icon-180.png">
 <title>Super Banco Imobiliário — Máquina Digital v4</title>
 <style>
 :root{--y:#efc000;--dark:#181818;--screen:#132015;--lime:#c9ff82;--green:#20a967;--red:#d83c3c;--blue:#5b7fd4}
@@ -128,15 +128,6 @@ function render(){
  $('history').innerHTML=history.length?history.map(x=>`<div class="hist">${x}</div>`).join(''):'<div class="hint">Nenhuma operação.</div>';
 }
 function greenStart(){if(ended)return;on=true;beep(600);buzz(20);add('Máquina ligada');save();render()}
-function selectCard(i){
- if(!on){greenStart()}
- if(L===i){R=null}
- else if(R===i){L=null}
- else if(L===null){L=i;beep(700);buzz(18)}
- else if(R===null){R=i;beep(760);buzz(18)}
- else {L=i}
- render()
-}
 function insertSide(side){
  if(!on){greenStart();return}
  const selected = [...document.querySelectorAll('.player.sel')].map(()=>null)
@@ -213,10 +204,11 @@ function deleteGame(i){savedGames.splice(i,1);localStorage.setItem('bi_v4_games'
 function load(){
  try{const x=JSON.parse(localStorage.getItem('bi_v4_current'));if(x?.players?.length){players=x.players;history=x.history||[];$('num').value=players.length;$('names').innerHTML=players.map((p,i)=>`<div class="row"><label>${i+1}</label><input value="${p.name}" oninput="players[${i}].name=this.value;save();render()"></div>`).join('');return true}}catch(e){}return false
 }
-if(!load())newGame();else render();
+if(!load()){
+ players=Array.from({length:4},(_,i)=>({name:'Jogador '+(i+1),balance:25000}));
+ document.getElementById('num').value=4;
+ document.getElementById('names').innerHTML=players.map((p,i)=>`<div class="row"><label>${i+1}</label><input value="${p.name}" oninput="players[${i}].name=this.value;save();render()"></div>`).join('');
+ save(); render();
+}else render();
 </script>
-<script>if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));</script></body>){players=x.players;history=x.history||[];$('num').value=players.length;$('names').innerHTML=players.map((p,i)=>`<div class="row"><label>${i+1}</label><input value="${p.name}" oninput="players[${i}].name=this.value;save();render()"></div>`).join('');return true}}catch(e){}return false}
-if(!load())newGame();else render();
-</script>
-<script>if ("serviceWorker" in navigator) window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));</script>
-<script>if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));</script></body></html>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));}</script></body></html>
